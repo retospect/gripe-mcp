@@ -1,0 +1,48 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "gripe-mcp"
+version = "0.1.0"
+description = "Agent complaint box — one-tool MCP for logging bugs and improvement requests"
+requires-python = ">=3.11"
+license = "LGPL-3.0-or-later"
+authors = [{name = "Reto Stamm", email = "reto@retostamm.com"}]
+readme = "README.md"
+keywords = ["mcp", "llm", "monitoring", "gripe", "agent"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+dependencies = [
+    "mcp[cli]>=1.0",
+    "platformdirs>=4.0",
+]
+
+[project.optional-dependencies]
+postgres = ["psycopg[binary]>=3.0"]
+dev = [
+    "gripe-mcp[postgres]",
+    "pytest>=8.0",
+    "pytest-asyncio>=0.24",
+]
+
+[project.urls]
+Repository = "https://github.com/acatome/gripe-mcp"
+
+[project.scripts]
+gripe = "gripe.server:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/gripe"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+
+[tool.ruff]
+line-length = 88
