@@ -6,7 +6,7 @@ One tool: report_issue(). Postgres if GRIPE_DB_URL is set, else .gripe-mcp/ JSON
 from __future__ import annotations
 
 import os
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from mcp.server.fastmcp import FastMCP
 
@@ -72,7 +72,7 @@ def report_issue(
         mode = "other"
 
     entry = {
-        "ts": datetime.now(timezone.utc).isoformat(),
+        "ts": datetime.now(UTC).isoformat(),
         "agent_id": _AGENT_ID,
         "task_id": _TASK_ID,
         "severity": severity,

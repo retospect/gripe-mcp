@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 import os
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Protocol
 
@@ -13,7 +13,9 @@ class Backend(Protocol):
     """Minimal storage interface."""
 
     def write(self, entry: dict[str, Any]) -> None: ...
-    def read(self, since: str | None, min_severity: str | None) -> list[dict[str, Any]]: ...
+    def read(
+        self, since: str | None, min_severity: str | None
+    ) -> list[dict[str, Any]]: ...
 
 
 # ── Severity ordering (for min_severity filter) ─────────────────────
@@ -22,6 +24,7 @@ _SEV_ORDER = {"low": 0, "medium": 1, "high": 2}
 
 
 # ── JSONL backend ────────────────────────────────────────────────────
+
 
 class JsonlBackend:
     """One JSONL file per day in data_dir."""
@@ -33,7 +36,7 @@ class JsonlBackend:
         self._dir.mkdir(parents=True, exist_ok=True)
 
     def write(self, entry: dict[str, Any]) -> None:
-        ts = entry.get("ts", datetime.now(timezone.utc).isoformat())
+        ts = entry.get("ts", datetime.now(UTC).isoformat())
         day = ts[:10]  # YYYY-MM-DD
         path = self._dir / f"{day}.jsonl"
         with open(path, "a") as f:
@@ -67,6 +70,7 @@ class JsonlBackend:
 
 
 # ── Postgres backend ─────────────────────────────────────────────────
+
 
 class PostgresBackend:
     """Single table in Postgres."""
@@ -104,7 +108,7 @@ class PostgresBackend:
                    VALUES (%(ts)s, %(agent_id)s, %(task_id)s, %(severity)s,
                            %(section)s, %(mode)s, %(description)s, %(raw)s)""",
                 {
-                    "ts": entry.get("ts", datetime.now(timezone.utc).isoformat()),
+                    "ts": entry.get("ts", datetime.now(UTC).isoformat()),
                     "agent_id": entry.get("agent_id"),
                     "task_id": entry.get("task_id"),
                     "severity": entry.get("severity", "low"),
@@ -144,6 +148,7 @@ class PostgresBackend:
 
 # ── Helpers ──────────────────────────────────────────────────────────
 
+
 def _parse_since(since: str | None) -> str | None:
     """Convert relative durations (7d, 30d) or ISO dates to ISO string."""
     if not since:
@@ -154,7 +159,7 @@ def _parse_since(since: str | None) -> str | None:
         from datetime import timedelta
 
         days = int(since[:-1])
-        cutoff = datetime.now(timezone.utc) - timedelta(days=days)
+        cutoff = datetime.now(UTC) - timedelta(days=days)
         return cutoff.isoformat()
     # Assume ISO date or datetime
     return since

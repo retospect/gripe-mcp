@@ -3,17 +3,14 @@
 from __future__ import annotations
 
 import json
-import os
-from datetime import datetime, timezone
-from pathlib import Path
-from unittest.mock import patch
+from datetime import UTC, datetime
 
 import pytest
 
 from gripe.storage import JsonlBackend, _parse_since
 
-
 # ── _parse_since ─────────────────────────────────────────────────────
+
 
 def test_parse_since_none():
     assert _parse_since(None) is None
@@ -28,7 +25,7 @@ def test_parse_since_relative_days():
     assert result is not None
     # Should be a valid ISO timestamp roughly 7 days ago
     dt = datetime.fromisoformat(result)
-    delta = datetime.now(timezone.utc) - dt
+    delta = datetime.now(UTC) - dt
     assert 6.9 < delta.total_seconds() / 86400 < 7.1
 
 
@@ -38,6 +35,7 @@ def test_parse_since_iso_passthrough():
 
 
 # ── JsonlBackend ─────────────────────────────────────────────────────
+
 
 @pytest.fixture
 def jsonl_dir(tmp_path):
@@ -51,7 +49,7 @@ def backend(jsonl_dir):
 
 def _make_entry(desc: str, severity: str = "low", mode: str = "other", **kw):
     entry = {
-        "ts": datetime.now(timezone.utc).isoformat(),
+        "ts": datetime.now(UTC).isoformat(),
         "agent_id": "test-agent",
         "task_id": "test-task",
         "severity": severity,
@@ -111,6 +109,7 @@ def test_read_min_severity_high(backend):
 
 
 # ── Server tool ──────────────────────────────────────────────────────
+
 
 def test_report_issue_returns_logged(tmp_path):
     """The report_issue tool should return 'logged' and write to JSONL."""
