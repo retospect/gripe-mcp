@@ -32,7 +32,7 @@ dev = [
 ]
 
 [project.urls]
-Repository = "https://github.com/acatome/gripe-mcp"
+Repository = "https://github.com/retospect/gripe-mcp"
 
 [project.scripts]
 gripe = "gripe.server:main"
