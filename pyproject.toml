@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "gripe-mcp"
-version = "0.1.0"
+version = "0.1.1"
 description = "Agent complaint box — one-tool MCP for logging bugs and improvement requests"
 readme = "README.md"
 license = "LGPL-3.0-or-later"
